@@ -1,0 +1,45 @@
+{
+  "name": "hello-next",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@heroicons/react": "^1.0.6",
+    "@next-auth/prisma-adapter": "1.0.3",
+    "@prisma/client": "^3.14.0",
+    "@tailwindcss/forms": "^0.5.1",
+    "accounting": "^0.4.1",
+    "autoprefixer": "^10.4.7",
+    "axios": "^0.27.2",
+    "next": "12.1.5",
+    "next-auth": "4.3.4",
+    "numeral": "^2.0.6",
+    "postcss": "^8.4.13",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-markdown": "8.0.3",
+    "react-table": "^7.7.0",
+    "tailwindcss": "^3.0.24"
+  },
+  "devDependencies": {
+    "@types/accounting": "^0.4.2",
+    "@types/next-auth": "3.13.0",
+    "@types/node": "16.11.32",
+    "@types/numeral": "^2.0.2",
+    "@types/react": "17.0.44",
+    "@types/react-table": "^7.7.11",
+    "prisma": "3.13.0",
+    "ts-node": "10.7.0",
+    "typescript": "4.6.4"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
+}
