@@ -1,5 +1,6 @@
 import React from "react";
-// import PropTypes from "prop-types";
+import { FiEdit3 } from "react-icons/fi";
+import { VscTrash } from "react-icons/vsc";
 import { GetServerSideProps } from "next";
 import prisma from "@lib/prisma";
 import { useSession } from "next-auth/react";
@@ -44,9 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
 
 const People: React.FC<{ b: BProps }> = (props) => {
   const { data: session, status } = useSession();
-  if (status === "loading") {
-    return <div>Authenticating ...</div>;
-  }
+  const loading = status === "loading";
 
   const columns = React.useMemo(
     () => [
@@ -85,18 +84,23 @@ const People: React.FC<{ b: BProps }> = (props) => {
           // console.log(r);
           return (
             <>
-              <Link href={`people/edit/${r.id}`}>
-                <a className="px-4 py-2 mr-2 font-semibold text-blue-700 bg-transparent border border-blue-500 rounded hover:bg-blue-500 hover:text-white hover:border-transparent">
-                  Edit
+              <Link href={`/loan/${r.id}`}>
+                <a className="inline-flex items-center px-4 py-2 mr-2 font-semibold text-blue-700 bg-transparent border border-blue-500 rounded hover:bg-blue-500 hover:text-white hover:border-transparent">
+                  <FiEdit3 className="mr-2 text-blue-700" /> Edit
                 </a>
               </Link>
-              <Link href={`people/${r.id}`}>
-                <a className="px-4 py-2 mr-2 font-semibold text-green-700 bg-transparent border border-green-500 rounded hover:bg-green-500 hover:text-white hover:border-transparent">
-                  {/* IoEyeOutline */}
-                  View
-                </a>
-              </Link>
-              {/* <a>d</a> */}
+
+              <a
+                href=""
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDeleteLoan(r.id);
+                }}
+                className="inline-flex items-center px-4 py-2 mr-2 font-semibold text-red-700 bg-transparent border border-red-500 rounded hover:bg-red-500 hover:text-white hover:border-transparent"
+              >
+                <VscTrash className="mr-2 text-red-700" />
+                Delete
+              </a>
             </>
           );
         },
@@ -112,8 +116,58 @@ const People: React.FC<{ b: BProps }> = (props) => {
     return total;
   };
 
+  async function handleDeleteButtonClick(id: number) {
+    const answer = confirm("Are you sure you want to delete this post?");
+    if (!answer) return;
+
+    try {
+      // await deletePost(id);
+      alert(id + "Post deleted successfully!");
+      // router.replace("/");
+    } catch (error) {
+      alert("Something went wrong :/");
+    }
+  }
+
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
+
+  async function handleDeleteLoan(id: number) {
+    const answer = confirm("Are you sure you want to delete this post?");
+    if (!answer) return;
+
+    try {
+      // await deletePost(id);
+      await fetch(`/api/loan/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "DELETE",
+      }).then(() => {
+        refreshData();
+        alert("Loan deleted successfully!");
+      });
+
+      // router.replace("/");
+    } catch (error) {
+      alert(error);
+    }
+  }
+
   const router = useRouter();
   const { pid } = router.query;
+
+  // When rendering client side don't display anything until loading is complete
+  if (typeof window !== "undefined" && loading) return null;
+
+  if (status === "loading") {
+    return <div>Authenticating ...</div>;
+  }
+
+  if (!session) {
+    return <Layout>Access denied</Layout>;
+  }
 
   const t = getTotals(props.b, "amount");
   return (
@@ -131,11 +185,23 @@ const People: React.FC<{ b: BProps }> = (props) => {
             </span>
             )
           </h1>
-          <Link href={`/new-entry/${pid}`}>
-            <a className="px-4 py-2 font-semibold text-green-700 bg-transparent border border-green-500 rounded hover:bg-green-500 hover:text-white hover:border-transparent">
-              Add Entry
+          <div>
+            <Link href={`/new-entry/${pid}`}>
+              <a className="px-4 py-2 mr-1 font-semibold text-green-700 bg-transparent border border-green-500 rounded hover:bg-green-500 hover:text-white hover:border-transparent">
+                Add Entry
+              </a>
+            </Link>
+            <a
+              href=""
+              onClick={(e) => {
+                e.preventDefault();
+                handleDeleteButtonClick(Number(pid));
+              }}
+              className="px-4 py-2 font-semibold text-red-700 bg-transparent border border-red-500 rounded hover:bg-red-500 hover:text-white hover:border-transparent"
+            >
+              Delete User
             </a>
-          </Link>
+          </div>
         </div>
         <Table columns={columns} data={props.b} />
       </div>

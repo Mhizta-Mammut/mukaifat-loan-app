@@ -6,6 +6,8 @@ import prisma from "../../lib/prisma";
 import { useSession } from "next-auth/react";
 import Table from "../components/Table";
 import Link from "next/link";
+import accounting from "accounting";
+import { useRouter } from "next/router";
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const people = await prisma.people.findMany();
@@ -31,6 +33,8 @@ type Props = {
 };
 
 const Blog: React.FC<Props> = (props) => {
+  const router = useRouter();
+
   async function handleDeleteButtonClick(id: number) {
     const answer = confirm("Are you sure you want to delete this post?");
     if (!answer) return;
@@ -76,13 +80,7 @@ const Blog: React.FC<Props> = (props) => {
                   View
                 </a>
               </Link>
-              <a
-                onClick={() => handleDeleteButtonClick(r.id)}
-                className="px-4 py-2 mr-2 font-semibold text-red-700 bg-transparent border border-red-500 rounded hover:bg-red-500 hover:text-white hover:border-transparent"
-              >
-                {/* IoEyeOutline */}
-                Delete
-              </a>
+
               {/* <a>d</a> */}
             </>
           );
@@ -98,17 +96,43 @@ const Blog: React.FC<Props> = (props) => {
   // When rendering client side don't display anything until loading is complete
   if (typeof window !== "undefined" && loading) return null;
 
+  if (status === "loading") {
+    return <div>Authenticating ...</div>;
+  }
+
   if (!session) {
     return <Layout>Access denied</Layout>;
   }
 
-  // console.log(props.people);
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
+
   return (
     <Layout>
       <div className="page">
         <div className="flex justify-between">
-          <h1 className="mb-5 text-2xl">Total Loan:</h1>
-          <p className="mb-5 text-3xl">'hhhhh'</p>
+          <h1 className="mb-5 text-2xl">
+            Total Loan:{" "}
+            <span className="text-4xl text-blue-700">
+              {" "}
+              {accounting.formatMoney(40, "₦", 2, ",", ".")}
+            </span>
+          </h1>
+          <h1 className="mb-5 text-2xl">
+            Paid:{" "}
+            <span className="text-4xl text-green-700">
+              {" "}
+              {accounting.formatMoney(30, "₦", 2, ",", ".")}
+            </span>
+          </h1>
+          <h1 className="mb-5 text-2xl">
+            Actual:{" "}
+            <span className="text-4xl text-red-700">
+              {" "}
+              {accounting.formatMoney(10, "₦", 2, ",", ".")}
+            </span>
+          </h1>
         </div>
 
         <div className="flex justify-between">
@@ -118,27 +142,8 @@ const Blog: React.FC<Props> = (props) => {
 
         <main>
           <Table columns={columns} data={props.people} />
-          {props.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
         </main>
       </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
     </Layout>
   );
 };

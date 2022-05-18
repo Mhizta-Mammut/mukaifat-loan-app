@@ -155,11 +155,7 @@ const Header: React.FC = () => {
             New User
           </a>
         </Link>
-        <Link href="/create">
-          <a className="px-4 py-2 mr-2 font-semibold text-blue-700 bg-transparent border border-blue-700 rounded hover:bg-blue-700 hover:text-white hover:border-transparent">
-            New post
-          </a>
-        </Link>
+
         <button onClick={() => signOut()}>
           <a className="px-4 py-2 mr-2 font-semibold text-blue-700 bg-transparent border border-blue-700 rounded hover:bg-blue-700 hover:text-white hover:border-transparent">
             Log out
@@ -186,7 +182,7 @@ const Header: React.FC = () => {
   }
 
   return (
-    <nav>
+    <nav className="bg-slate-200">
       {left}
       {right}
       <style jsx>{`
